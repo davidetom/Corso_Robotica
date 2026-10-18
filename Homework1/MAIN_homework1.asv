@@ -1,0 +1,23 @@
+clear all
+close all 
+
+% 1. Aggiungi il percorso della libreria ZMQ di CoppeliaSim
+addpath(genpath('/Applications/coppeliaSim.app/Contents/Resources/programming/zmqRemoteApi/clients/matlab'));
+
+% 2. Inizializza il client ZMQ e ottieni l'oggetto 'sim'
+client = RemoteAPIClient();
+sim = client.getObject('sim');
+
+% 3. Passa l'oggetto 'sim' alla classe SimProjectUtils
+simulator = SimProjectUtils(sim); 
+
+% 4.a. Calcola la cinematica diretta dell'end effector  
+qDH0 = [0, -pi/2, -pi/2, -pi/2, 0, pi/2, 0]; 
+
+[p, phi, R, quat] = direct_kin(q, 'ZYZ');
+
+disp(p);
+disp();
+
+% 4.b Muovi il braccio
+simulator.moveLeftArm(qDH0);
