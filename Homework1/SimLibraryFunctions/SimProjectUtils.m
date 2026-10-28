@@ -66,7 +66,8 @@ classdef SimProjectUtils < handle
         function [err] = moveLeftArm(obj, q)
             % INPUT: q - joint position in Re^7 
             err = zeros(1,7);
-            coppelia_offset = [0, pi/2, pi/2, pi/2, 0, -pi/2, 0]; 
+            % Tabella DH con x4 verso il polso (prima: [0, pi/2, pi/2, pi/2, 0, -pi/2, 0])
+            coppelia_offset = [0, pi/2, pi/2, -pi/2, 0, pi/2, 0]; 
             for i=1:7
                 % ZMQ: Imposta direttamente la posizione del giunto
                 obj.sim.setJointPosition(obj.robot.LeftJointHandle(i), q(i) + coppelia_offset(i));

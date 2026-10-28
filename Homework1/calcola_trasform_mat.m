@@ -7,13 +7,13 @@ syms theta_1 theta_2 theta_3 theta_4 theta_5 theta_6 theta_7 real
 theta = [theta_1, theta_2, theta_3, theta_4, theta_5, theta_6, theta_7];
 
 % tabella matriciale con parametri Denavit-Hartenberg
-Tab = [0,       0,      theta_1,    -pi/2;
-       0,       0,      theta_2,     pi/2;
-       0,       0.28,   theta_3,    -pi/2;
-       0.28,    0,      theta_4,     pi/2;
-       0,       0,      theta_5,    -pi/2;
-       0,       0,      theta_6,    -pi/2;
-       0,       0.11,   theta_7,      pi;];
+Tab = [0,       0,      theta_1,   -pi/2;
+       0,       0,      theta_2,   -pi/2;
+       0,      -0.28,   theta_3,   -pi/2;
+       0.28,    0,      theta_4,    pi/2;   % x4 verso il polso (prima: -0.28, -pi/2)
+       0,       0,      theta_5,   -pi/2;   % (prima: pi/2)
+       0,       0,      theta_6,    pi/2;
+       0,      -0.11,   theta_7,     pi;];
 
 % matrice di trasformazione da base a 0
 A_b_0 = [-0.0449,   0.9848,     0.1677,     0.0155;

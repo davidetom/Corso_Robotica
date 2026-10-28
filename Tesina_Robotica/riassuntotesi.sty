@@ -1,0 +1,44 @@
+0)Introduzione
+    Motivazioni: individuazione e soccorso persone, trasporto beni di prima necessità come medicinali, 
+    alimenti o kit di pronto soccorso tramite l'implementazione di un algoritmo di controllo basato sui segnali di marshalling (processo tramite cui il personale a terra comunica con il pilota usando segnali visivi) e riconoscimento dei segnali del corpo
+INDICE
+1)Stato dell'arte
+    -drone matematica base di un drone, spiegazione di come funzionano i quattro motori e i relativi momenti torcenti (pitch, yaw, roll)
+    -algoritmi di stabilizzazione: utilizzo di IMU, barometro e optical flow
+    -breve descrizione del SDK
+    -breve descrizione di python e funzionamento di mediapipe
+    -breve spiegazione diccome funzionao i thread per boostare le prestazioni del sistema
+2)Obiettivi
+    -riconoscimento gesti tramite processamento dello stream video del drone con mediapipe
+    -centratura automatica per non perdere di vista la persona
+3)Architettura
+    3.1 cattura stream video 
+    3.2 elaborazione video tramite mediapipe
+    3.3 classifizìcazione dei gesti tramite posizione relative dei landmarks
+    3.4 aggiunta dei comandi allo stack dei comandi
+    3.5 processamento dei comandi da perte della funzione specifica
+    3.6 utilizzo del threading per migliorare le prestazioni
+4)Implementazione
+    -spiegazione del main
+    -spiegazione di altre funzioni come worker thread o mediapipe thread
+    -spiegazione di utilizzo queue dei comandi
+5)Conculsioni  e Applicazioni future
+    -flight tests
+    -riconoscimento pose e centratura viso: limite visibilità e soluzione implementazione di videocamere termiche
+    -tempo risposta 
+    -limite 2: collisioni con ostacoli e soluzione path planning, creazione di un'immagine virtuale dell'ambiente circostante per evitare ostacoli
+    -range telecamera: i comandi e il riconoscimento sono fatti dal pc, implementazione di hardware più potente per riconoscimento direttamente sul drone
+    -trasporto di medtcinali e altri beni
+    -controllo di uno sciame di droni
+6)Ringraziamenti 
+    -professoressa
+    -mamma e papà per avermi dato la possibilità di studiare
+    -marta e mariya
+    -amici università 
+    -alessia
+7)Bibliografia e allegati
+    -codice python completo
+    -documentazione djitellopy
+    -documentazione mediapipe
+    -manuale utilizzo del tello
+    -paper con matematica dei quadricotteri

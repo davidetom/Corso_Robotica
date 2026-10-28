@@ -1,0 +1,270 @@
+% =====================================================================
+% Capitolo 1 - Homework 1: cinematica diretta del braccio sinistro di Reachy 2
+% (il titolo del capitolo e' impostato in main.tex con \capitolo{...}{capitolo1})
+%
+% TODO prima della consegna:
+%  - inserire gli errori numerici della validazione (Tabella \ref{tab:hw1-validazione});
+%  - dopo il confronto con la professoressa: se si adotta la tabella conforme alla
+%    convenzione (x_4 verso il polso), aggiornare posa, offset e limiti in direct_kin.m
+%    e SimProjectUtils.m secondo la Tabella \ref{tab:hw1-dati-corretti}.
+% =====================================================================
+
+\section{Obiettivo}
+\label{sec:hw1-obiettivo}
+
+L'homework richiede la cinematica diretta del braccio sinistro del robot Reachy~2 di Pollen Robotics, composto da sette giunti rotoidali.
+La consegna comprende il codice MATLAB, con una funzione che, dati i valori dei giunti, restituisce posizione e orientamento dell'end-effector, e questa relazione.
+La relazione descrive le terne scelte secondo la convenzione di Denavit-Hartenberg (DH), la tabella dei parametri e la validazione del modello sulla scena CoppeliaSim fornita.
+
+\section{Modello del braccio}
+\label{sec:hw1-modello}
+
+I sette giunti del braccio sono elencati in Tabella~\ref{tab:hw1-limiti} nell'ordine della catena, con il nome che hanno nella scena (prefisso \texttt{l\_} per il braccio sinistro).
+I versi di rotazione positivi sono quelli dei giunti in CoppeliaSim.
+Le distanze usate nel modello sono $0.28$~m tra spalla e gomito, $0.28$~m tra gomito e polso e $0.11$~m tra polso e centro della pinza.
+
+I limiti articolari assegnati sono espressi nelle variabili DH del testo.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|l|c|c|}
+\hline
+Giunto & Nome nella scena & $q_{\min}$ (rad) & $q_{\max}$ (rad) \\
+\hline
+1 & \texttt{shoulder\_pitch} & $-\pi$ & $\pi$ \\
+2 & \texttt{shoulder\_roll} & $-\pi/2$ & $\pi/2$ \\
+3 & \texttt{elbow\_yaw} & $-4.7124$ & $\pi/2$ \\
+4 & \texttt{elbow\_pitch} & $-3.8208$ & $-1.4708$ \\
+5 & \texttt{wrist\_roll} & $-0.35$ & $0.35$ \\
+6 & \texttt{wrist\_pitch} & $1.2208$ & $1.9208$ \\
+7 & \texttt{wrist\_yaw} & $-\pi/2$ & $\pi/2$ \\
+\hline
+\end{tabular}
+\caption{Giunti del braccio sinistro e limiti articolari.}
+\label{tab:hw1-limiti}
+\end{table}
+
+Le variabili DH e quelle di CoppeliaSim differiscono per un offset costante, gi\`a applicato nella funzione \texttt{moveLeftArm} di \texttt{SimProjectUtils.m}:
+\begin{equation}
+q_{\text{coppelia}} = q_{\text{DH}} + \left[0,\ \tfrac{\pi}{2},\ \tfrac{\pi}{2},\ \tfrac{\pi}{2},\ 0,\ -\tfrac{\pi}{2},\ 0\right].
+\label{eq:hw1-offset}
+\end{equation}
+
+\section{Terna base e terna 0}
+\label{sec:hw1-terna0}
+
+La terna base coincide con la terna mondo del simulatore.
+La terna 0 \`e centrata nella spalla sinistra ed \`e ruotata per tenere conto delle inclinazioni della spalla di $15^\circ$ e $10^\circ$ indicate nel testo.
+La sua posa rispetto alla base \`e la matrice assegnata
+\begin{equation}
+A_0^b =
+\begin{bmatrix}
+-0.0449 & 0.9848 & 0.1677 & 0.0155 \\
+-0.2549 & -0.1736 & 0.9513 & 0.2000 \\
+0.9659 & 0 & 0.2588 & 0.9960 \\
+0 & 0 & 0 & 1
+\end{bmatrix}.
+\end{equation}
+Nella terna 0, con il braccio nella posa di riferimento, $x_0$ punta verso l'alto, $z_0$ verso l'esterno del robot e il braccio si estende lungo $-x_0$.
+
+\section{Scelta delle terne DH}
+\label{sec:hw1-terne}
+
+Le terne sono scelte in modo che la posa di riferimento assegnata,
+\begin{equation}
+q = \left[0,\ -\tfrac{\pi}{2},\ -\tfrac{\pi}{2},\ -\tfrac{\pi}{2},\ 0,\ \tfrac{\pi}{2},\ 0\right],
+\label{eq:hw1-posa}
+\end{equation}
+riproduca la configurazione del testo e che ogni asse $z$ segua il verso di rotazione positivo del giunto in CoppeliaSim.
+La tabella risultante \`e stata validata in simulazione, variando un giunto alla volta (Sezione~\ref{sec:hw1-validazione}).
+Le terne adottate sono mostrate in Figura~\ref{fig:hw1-terne-adottate}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{images/terne_dh_adottata.pdf}
+\caption[Terne DH adottate nella posa di riferimento]{Terne DH adottate nella posa di riferimento ($x_4$ verso la spalla). Assi $x$ in rosso, assi $z$ in blu, assi $x \equiv z$ coincidenti in viola; $\theta_i$ in arancio e $\alpha_i$ in verde. Gli assi tratteggiati, tra parentesi, appartengono a un'altra terna e servono a indicare l'angolo. Distanze non in scala.}
+\label{fig:hw1-terne-adottate}
+\end{figure}
+
+\subsection{Criteri adottati}
+
+\begin{itemize}
+    \item \textbf{Assi $z$.} L'asse $z_{i-1}$ giace sull'asse del giunto $i$, con verso concorde alla rotazione positiva del giunto in CoppeliaSim (regola della mano destra). Il vincolo \`e necessario perch\'e il testo lega le variabili con l'Equazione~\eqref{eq:hw1-offset}: un asse invertito farebbe ruotare il giunto al contrario.
+    \item \textbf{Assi $x$.} Dove due assi consecutivi si incontrano (giunti 1, 2, 3 alla spalla; giunti 5, 6, 7 al polso) la normale comune non \`e definita. Il verso di $x_i$ \`e allora scelto in modo che, nella posa di riferimento, $\theta_i$ coincida con il $q_i$ assegnato.
+    \item \textbf{Origini.} $O_0$, $O_1$ e $O_2$ coincidono nel centro della spalla, $O_3$ \`e al gomito, $O_4$, $O_5$ e $O_6$ coincidono nel centro del polso, $O_7$ \`e a met\`a delle dita della pinza.
+\end{itemize}
+
+\subsection{\texorpdfstring{Segni di $d_3$ e $d_7$}{Segni di d3 e d7}}
+
+L'asse $z_2$ (asse del giunto 3, lungo il braccio) e l'asse $z_6$ (asse del giunto 7) risultano diretti verso la spalla, per il verso di rotazione dei rispettivi giunti.
+Il gomito e la pinza stanno nel verso opposto, quindi $d_3 = -0.28$~m e $d_7 = -0.11$~m.
+L'angolo $\alpha_7 = \pi$ ribalta poi $z_7$ verso l'esterno della pinza, allineando la terna 7 con la terna \texttt{l\_EE\_FRAME} del simulatore.
+
+\subsection{Tabella DH adottata}
+
+La Tabella~\ref{tab:hw1-dh} riporta i parametri adottati.
+Con questa tabella $\theta_i = q_i$: la funzione \texttt{direct\_kin} riceve direttamente le variabili del testo, senza offset.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+Link & $a_i$ (m) & $d_i$ (m) & $\theta_i$ & $\alpha_i$ \\
+\hline
+1 & $0$ & $0$ & $\theta_1$ & $-\pi/2$ \\
+2 & $0$ & $0$ & $\theta_2$ & $-\pi/2$ \\
+3 & $0$ & $-0.28$ & $\theta_3$ & $-\pi/2$ \\
+4 & $-0.28$ & $0$ & $\theta_4$ & $-\pi/2$ \\
+5 & $0$ & $0$ & $\theta_5$ & $\pi/2$ \\
+6 & $0$ & $0$ & $\theta_6$ & $\pi/2$ \\
+7 & $0$ & $-0.11$ & $\theta_7$ & $\pi$ \\
+\hline
+\end{tabular}
+\caption{Parametri DH adottati.}
+\label{tab:hw1-dh}
+\end{table}
+
+\subsection{\texorpdfstring{Discrepanza con la convenzione su $x_4$}{Discrepanza con la convenzione su x4}}
+\label{sec:hw1-discrepanza}
+
+La convenzione DH vorrebbe $x_4$ lungo la normale comune a $z_3$ e $z_4$, diretto dal giunto 4 (gomito) al giunto 5 (polso), quindi verso il basso, con $a_4 = +0.28$~m.
+Nella tabella adottata $x_4$ \`e invece diretto verso la spalla.
+
+La scelta \`e imposta dai dati del testo.
+L'angolo $\theta_4$ \`e l'angolo da $x_3$ a $x_4$ attorno a $z_3$: nella posa di riferimento $x_3$ punta in avanti e $z_3$ verso l'esterno del robot, e con $\theta_4 = -\pi/2$ l'asse $x_4$ risulta diretto verso la spalla.
+Il polso sta $0.28$~m nel verso opposto, da cui $a_4 = -0.28$~m.
+Per mantenere $z_4$ concorde con la rotazione del giunto 5 servono poi $\alpha_4 = -\pi/2$ e $\alpha_5 = +\pi/2$.
+
+Si \`e scelto di restare coerenti con la posa di riferimento, con l'offset di \texttt{moveLeftArm} e con i limiti articolari forniti, che sono espressi in queste variabili.
+Rispettando la convenzione cambierebbero solo le righe 4 e 5 della tabella (Tabella~\ref{tab:hw1-dh-convenzione}); le terne corrispondenti sono mostrate in Figura~\ref{fig:hw1-terne-convenzione}.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+Link & $a_i$ (m) & $d_i$ (m) & $\theta_i$ & $\alpha_i$ \\
+\hline
+4 & $+0.28$ & $0$ & $\theta_4$ & $\pi/2$ \\
+5 & $0$ & $0$ & $\theta_5$ & $-\pi/2$ \\
+\hline
+\end{tabular}
+\caption{Righe della tabella DH che cambiano con $x_4$ diretto verso il polso.}
+\label{tab:hw1-dh-convenzione}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{images/terne_dh_convenzione.pdf}
+\caption[Terne DH conformi alla convenzione]{Terne DH conformi alla convenzione, con $x_4$ diretto dal gomito al polso, nella posa di riferimento. Rispetto alla Figura~\ref{fig:hw1-terne-adottate} cambiano solo le terne 4 e 5 e gli angoli $\theta_4$, $\alpha_4$, $\alpha_5$ e $\theta_6$.}
+\label{fig:hw1-terne-convenzione}
+\end{figure}
+
+Le nuove variabili valgono $\theta = q + [0,\ 0,\ 0,\ \pi,\ 0,\ -\pi,\ 0]$.
+Anche $\theta_6$ cambia di $\pi$, perch\'e per $\theta_5 = 0$ l'asse $x_5$ coincide con $x_4$ e si ribalta con esso.
+Di conseguenza andrebbero aggiornati i dati del testo relativi ai giunti 4 e 6 come in Tabella~\ref{tab:hw1-dati-corretti}; i dati degli altri giunti restano invariati.
+
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{|c|l|c|c|}
+\hline
+Giunto & Dato (rad) & Testo & Convenzione DH \\
+\hline
+4 & Posa di riferimento & $-\pi/2$ & $\pi/2$ \\
+4 & Offset per CoppeliaSim & $\pi/2$ & $-\pi/2$ \\
+4 & Limiti & $[-3.8208,\ -1.4708]$ & $[-0.6792,\ 1.6708]$ \\
+\hline
+6 & Posa di riferimento & $\pi/2$ & $-\pi/2$ \\
+6 & Offset per CoppeliaSim & $-\pi/2$ & $\pi/2$ \\
+6 & Limiti & $[1.2208,\ 1.9208]$ & $[-1.9208,\ -1.2208]$ \\
+\hline
+\end{tabular}
+\caption{Dati dei giunti 4 e 6: valori del testo e valori con la tabella conforme alla convenzione ($x_4$ verso il polso).}
+\label{tab:hw1-dati-corretti}
+\end{table}
+
+In entrambi i casi la posa di riferimento corrisponde allo zero di CoppeliaSim.
+Le due tabelle danno la stessa matrice $A_e^b$ in ogni configurazione. Su 2000 configurazioni casuali, la massima differenza tra gli elementi delle due matrici \`e dell'ordine di $10^{-15}$.
+
+\section{Terna dell'end-effector}
+\label{sec:hw1-ee}
+
+L'origine $O_7$ \`e posta a met\`a delle dita della pinza, a $d_7 = -0.11$~m dal polso lungo $z_6$.
+Con $\alpha_7 = \pi$ l'asse $z_7$ punta verso l'esterno della pinza e $x_7$ coincide con $x_6$ nella posa di riferimento ($\theta_7 = 0$).
+La terna 7 coincide cos\`i con la terna \texttt{l\_EE\_FRAME} della scena.
+
+\section{Cinematica diretta}
+\label{sec:hw1-cinematica}
+
+La posa dell'end-effector rispetto alla base \`e il prodotto
+\begin{equation}
+A_e^b(q) = A_0^b\, A_1^0(\theta_1)\, A_2^1(\theta_2) \cdots A_7^6(\theta_7), \qquad \theta = q,
+\end{equation}
+dove ogni $A_i^{i-1}$ si ottiene dalla riga $i$ della Tabella~\ref{tab:hw1-dh}.
+Il prodotto \`e calcolato una sola volta in forma simbolica dallo script \texttt{calcola\_trasform\_mat.m}, che salva $A_e^b$ e le singole matrici nel file \texttt{matrici\_robot.mat}.
+La funzione \texttt{direct\_kin} sostituisce poi i valori numerici dei giunti: la posizione $p$ \`e la quarta colonna di $A_e^b$ e la matrice di rotazione $R$ \`e il blocco $3 \times 3$ in alto a sinistra.
+
+\section{\texorpdfstring{La funzione \texttt{direct\_kin}}{La funzione direct\_kin}}
+\label{sec:hw1-directkin}
+
+\begin{lstlisting}[language=Matlab]
+[p, phi, R, quat] = direct_kin(q, 'ZYZ');   % oppure 'RPY'
+\end{lstlisting}
+
+\begin{itemize}
+    \item \textbf{Ingressi.} \texttt{q} \`e il vettore $1 \times 7$ dei giunti, in radianti, nelle variabili DH del testo; \texttt{euler\_angles} sceglie gli angoli di Eulero, \texttt{'ZYZ'} oppure \texttt{'RPY'}.
+    \item \textbf{Uscite.} \texttt{p} \`e la posizione dell'end-effector nella terna base, in metri; \texttt{phi} sono i tre angoli di Eulero richiesti, in radianti; \texttt{R} \`e la matrice di rotazione; \texttt{quat} \`e il quaternione $[\eta;\ \epsilon_1;\ \epsilon_2;\ \epsilon_3]$.
+    \item \textbf{Limiti articolari.} Se un giunto esce dai limiti della Tabella~\ref{tab:hw1-limiti}, la funzione emette un warning e satura il valore al limite.
+    \item \textbf{Angoli ZYZ.} \texttt{phi} $= [\varphi, \vartheta, \psi]$ con $R = R_z(\varphi) R_y(\vartheta) R_z(\psi)$. Nel caso singolare $\sin\vartheta \approx 0$ (soglia $10^{-6}$) si pone $\varphi = 0$ e si ricava $\psi$ dal blocco $2 \times 2$ superiore di $R$.
+    \item \textbf{Angoli RPY.} \texttt{phi} $= [\varphi, \vartheta, \psi]$ con $R = R_z(\varphi) R_y(\vartheta) R_x(\psi)$. Nel caso singolare $\cos\vartheta \approx 0$ si pone $\varphi = 0$ e si ricava $\psi$ dagli elementi rimanenti di $R$.
+    \item \textbf{Quaternione.} Calcolato direttamente dagli elementi di $R$, con il segno delle componenti vettoriali dato dalle differenze degli elementi fuori diagonale.
+\end{itemize}
+
+\section{Validazione in CoppeliaSim}
+\label{sec:hw1-validazione}
+
+Il modello \`e stato confrontato con la posa della terna \texttt{l\_EE\_FRAME} letta dal simulatore (script \texttt{test\_orientamento.m}).
+Si confrontano direttamente le matrici di rotazione, tramite $\lVert R - R_c \rVert_F$, e le posizioni, tramite $\lVert p - p_c \rVert$, dove il pedice $c$ indica i valori di CoppeliaSim.
+Il confronto sulle matrici evita ambiguit\`a dovute alla convenzione degli angoli usata dal simulatore.
+
+Il test \`e stato eseguito nella posa di riferimento e poi variando un giunto alla volta, entro i limiti articolari.
+In tutti i casi la posa calcolata coincide con quella del simulatore.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|c|c|}
+\hline
+Configurazione & $\lVert R - R_c \rVert_F$ & $\lVert p - p_c \rVert$ (m) \\
+\hline
+Posa di riferimento & \textit{da inserire} & \textit{da inserire} \\
+$q_1$ variato & \textit{da inserire} & \textit{da inserire} \\
+$q_2$ variato & \textit{da inserire} & \textit{da inserire} \\
+$q_3$ variato & \textit{da inserire} & \textit{da inserire} \\
+$q_4$ variato & \textit{da inserire} & \textit{da inserire} \\
+$q_5$ variato & \textit{da inserire} & \textit{da inserire} \\
+$q_6$ variato & \textit{da inserire} & \textit{da inserire} \\
+$q_7$ variato & \textit{da inserire} & \textit{da inserire} \\
+\hline
+\end{tabular}
+\caption{Errori tra modello e simulatore.}
+\label{tab:hw1-validazione}
+\end{table}
+
+\section{Istruzioni per l'uso del codice}
+\label{sec:hw1-istruzioni}
+
+\begin{enumerate}
+    \item Eseguire \texttt{calcola\_trasform\_mat.m}: genera \texttt{matrici\_robot.mat}. Va ripetuto solo se si modifica la tabella DH.
+    \item Aprire in CoppeliaSim la scena \texttt{SimScene/reachy.ttt}.
+    \item In \texttt{MAIN\_homework1.m} verificare il percorso della libreria ZMQ di CoppeliaSim (\nolinkurl{zmqRemoteApi/clients/matlab}), che dipende dal sistema operativo e dalla cartella di installazione.
+    \item Eseguire \texttt{MAIN\_homework1.m}: lo script si connette al simulatore, avvia la simulazione, calcola la cinematica diretta, stampa posizione e angoli di Eulero e porta il braccio nella configurazione \texttt{q}.
+    \item Per altre configurazioni modificare \texttt{q} (variabili DH del testo, in radianti) e il secondo argomento di \texttt{direct\_kin}.
+\end{enumerate}
+
+Lo script \texttt{schema\_terne\_dh.py} genera gli schemi delle Figure~\ref{fig:hw1-terne-adottate} e~\ref{fig:hw1-terne-convenzione}, ricavando assi e angoli direttamente dalle tabelle DH.
+
+\section{Conclusioni}
+\label{sec:hw1-conclusioni}
+
+Il modello riproduce la posa della terna \texttt{l\_EE\_FRAME} del simulatore, sia nella posa di riferimento sia muovendo un giunto alla volta.
+L'unico scostamento dalla convenzione DH riguarda il verso di $x_4$, imposto dalla posa di riferimento e dai dati del testo; la tabella alternativa conforme alla convenzione \`e documentata nella Sezione~\ref{sec:hw1-discrepanza}, insieme ai dati da aggiornare per adottarla.

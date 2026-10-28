@@ -1,0 +1,133 @@
+\documentclass{TesiDiaUniroma3}
+
+\titolo{\textbf{Homeworks su Reachy 2}}
+\autore{Davide Tommasino}
+\matricola{589552}
+\relatore{Martina Lippi}
+\annoAccademico{2026/2027}
+% dati opzionali
+
+% --- INIZIO richiamo di pacchetti di utilità. 
+\usepackage[utf8]{inputenc}
+\usepackage{subcaption}
+\usepackage{graphicx}
+\usepackage[bottom]{footmisc}
+\usepackage{amsthm}	% per definizioni e teoremi
+\usepackage{amsmath}	% per ``cases'' environment
+\usepackage{graphicx}
+\usepackage{float}
+
+% --- IMPOSTAZIONE HYPERREF ---
+% Carica xurl per gestire meglio gli a capo negli URL lunghi
+\usepackage{xurl} 
+\usepackage[plainpages=false, colorlinks=true, urlcolor=blue, linkcolor=blue, citecolor=blue]{hyperref}
+\usepackage[all]{hypcap} 
+% --- FINE IMPOSTAZIONE HYPERREF ---
+
+\usepackage{amsfonts}
+\usepackage{mathtools}
+\usepackage[width=.75\textwidth]{caption}
+\usepackage{adjustbox}
+\usepackage[normalem]{ulem}
+\usepackage[]{algorithm2e}
+\usepackage{makecell} % Per le tabelle
+\usepackage{listings}
+\usepackage[table]{xcolor}
+\usepackage{tabularx}
+\useunder{\uline}{\ul}{}
+% --- FINE richiamo di pacchetti di utilità
+
+% --- SEZIONE PER SNIPPET COLORATI
+
+% Carica i pacchetti necessari UNA SOLA VOLTA
+\usepackage[dvipsnames]{xcolor}
+\usepackage{listings}
+\usepackage{upquote} % Per gestire correttamente ' e " nelle stringhe
+
+% 1. Definiamo i colori stile VS Code
+\definecolor{vscodeLightBackground}{HTML}{FFFFFF}
+\definecolor{vscodeLightText}{HTML}{000000}
+\definecolor{vscodeLightKeyword}{HTML}{0000FF}    % Blu (if, else, new, public, static, class...)
+\definecolor{vscodeLightType}{HTML}{267F99}       % Verde-acqua (void, string, float, int, Classi)
+\definecolor{vscodeLightString}{HTML}{A31515}      % Rosso scuro (stringhe) <-- ECCOLO!
+\definecolor{vscodeLightComment}{HTML}{008000}     % Verde (commenti)
+\definecolor{vscodeLightMethod}{HTML}{795E26}      % Marrone (nomi metodi)
+\definecolor{vscodeLightNumber}{HTML}{098658}      % Verde (numeri)
+
+% 2. Definiamo lo stile "vscodelight"
+\lstdefinestyle{vscodelight}{
+    backgroundcolor=\color{vscodeLightBackground}, % Sfondo bianco
+    basicstyle=\color{vscodeLightText}\ttfamily,  % Colore testo base
+    keywordstyle=\color{vscodeLightKeyword},      % Stile keyword (blu)
+    commentstyle=\color{vscodeLightComment},      % Stile commenti (verde)
+    stringstyle=\color{vscodeLightString},        % Stile stringhe (rosso) <-- ECCOLO!
+    numberstyle=\tiny\color{vscodeLightNumber},   % Stile numeri
+    keywordstyle=[2]\color{vscodeLightType},
+    morekeywords=[2]{
+        void, bool, int, float, string, byte, 
+        NgoEngine, TyDroneAndroidPlugin, TyDroneStub, RuntimePlatform, Application, 
+        AndroidJavaObject, Texture2D, Renderer, Vector2, FormattableString, Debug, LogType, 
+        CockpitCommandManager, CockpitSwitchBoard, CockpitOculusTouchModelController, 
+        EmergencyProtocol, CockpitStateView, VideoContainerVideoPlayer, 
+        PersistentLogHandler, OVRInput 
+    }, 
+    keywordstyle=[3]\color{vscodeLightMethod},
+    morekeywords=[3]{
+        GetInstance, Run, EntryCommand, GetSentCommand, GetNotice, PickImage, SetRecording, 
+        IsRecording, GetState, SetEnabled, Call, GetRawObject, ConvertFromJNIArray, 
+        Update, Start, LateUpdate, Land, Takeoff, SetStickCommand, SetExtraCommand, 
+        SavePicture, IsMoving, ApplyDirectionalDeadzone, SendCommand, EnableControls, DisableControls, 
+        StatusCheck, CountDown, Emergency, StartEmergencyProtocol, UpdateLightStrength, UpdateMessage, 
+        Translate, UpdateBatteryState, UpdateWifiState, UpdateCompass, select, ToString, IsZero, 
+        UpdateTexture, ChangeTexture, FadeIn, Dark, 
+        Awake, OnEnable, OnDisable, OnDestroy, SetupLogger, HandleLog 
+    },
+    showstringspaces=false,
+    breaklines=true,
+    frame=single, 
+    rulecolor=\color{black}, 
+    tabsize=4,
+    captionpos=b,
+    upquote=true 
+}
+
+% 3. Impostiamo lo stile vscodelight e il linguaggio C# COME DEFAULT
+\lstset{
+    style=vscodelight,  % Applica lo stile colorato a TUTTO
+    language={[Sharp]C}    % Imposta C# come linguaggio di default
+}
+
+% --- FINE SEZIONE SNIPPET COLORATI
+
+\begin{document}
+% ----- Pagine di frontespizio, numerate in romano (i,ii,iii,iv...) 
+\frontmatter
+\generaFrontespizio
+\introduzione{introduzione}	% inserisce l'introduzione e la prende in questo caso da introduzione.tex
+\generaIndice
+\generaIndiceFigure
+
+
+% ----- Pagine di tesi, numerate in arabo (1,2,3,4,...)
+\mainmatter
+% il comando ``capitolo'' ha come parametri:
+% 1) il titolo del capitolo
+% 2) il nome del file tex (senza estensione) che contiene il capitolo. Tale nome \`e usato anche come label del capitolo
+\capitolo{Homework 1 - Direct Kinematics}{capitolo1}
+\capitolo{Homework 2 -}{capitolo2}
+\capitolo{Homework 3 -}{capitolo3}
+\capitolo{Homework 4 -}{capitolo4}
+%\capitolo{Conclusioni}{capitolo5}
+
+%\input{appendice.tex}
+
+% ----- Parte finale della tesi
+\backmatter
+%\markboth{Ringraziamenti}{Ringraziamenti}
+%\ringraziamenti{ringraziamenti}
+
+% Bibliografia con BibTeX
+% Non si deve specificare lo stile della bibliografia
+%\bibliography{bibliografia} % inserisce la bibliografia e la prende in questo caso da bibliografia.bib
+
+\end{document}

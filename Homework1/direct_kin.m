@@ -1,8 +1,10 @@
 function [p, phi, R, quat] = direct_kin(q, euler_angles)
 
     % Definizione dei limiti fisici dei giunti del braccio sinistro
-    q_min = [-pi, -pi/2, -4.7124, -3.8208, -0.35, 1.2208, -pi/2];
-    q_max = [ pi,  pi/2,  pi/2,   -1.4708,  0.35, 1.9208,  pi/2];
+    % Tabella DH con x4 verso il polso: cambiano i limiti dei giunti 4 e 6
+    % (prima: q4 in [-3.8208, -1.4708], q6 in [1.2208, 1.9208])
+    q_min = [-pi, -pi/2, -4.7124, -0.6792, -0.35, -1.9208, -pi/2];
+    q_max = [ pi,  pi/2,  pi/2,    1.6708,  0.35, -1.2208,  pi/2];
 
     % Controllo di violazione dei limiti
     if any(q < q_min) || any(q > q_max)
@@ -69,7 +71,7 @@ function [p, phi, R, quat] = direct_kin(q, euler_angles)
         phi = [gamma; theta; psi];
     end
     
-    % Quaternion vector
+    % Quaternione
     nu = 0.5 * sqrt(R(1,1) + R(2,2) + R(3,3) + 1);
     epsilon_1 = 0.5 * sign(R(3,2) - R(2,3)) * sqrt(R(1,1) - R(2,2) - R(3,3) + 1);
     epsilon_2 = 0.5 * sign(R(1,3) - R(3,1)) * sqrt(R(2,2) - R(1,1) - R(3,3) + 1);

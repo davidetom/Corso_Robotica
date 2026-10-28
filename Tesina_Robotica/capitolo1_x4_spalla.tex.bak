@@ -1,0 +1,130 @@
+% =====================================================================
+% Capitolo 1 - Homework 1: cinematica diretta del braccio sinistro di Reachy 2
+% (titolo impostato in main.tex con \capitolo{...}{capitolo1})
+%
+% TODO prima della consegna:
+%  - inserire gli errori della validazione (Tabella \ref{tab:hw1-validazione});
+%  - dopo il confronto con la professoressa: se si adotta la tabella conforme alla
+%    convenzione, aggiornare posa, offset e limiti secondo la Tabella \ref{tab:hw1-dati-corretti}.
+% =====================================================================
+
+\section{Scelta delle terne DH}
+\label{sec:hw1-terne}
+
+Le terne (Figura~\ref{fig:hw1-terne-adottate}) sono scelte in modo che la posa di riferimento assegnata
+\[
+q = \left[0,\ -\tfrac{\pi}{2},\ -\tfrac{\pi}{2},\ -\tfrac{\pi}{2},\ 0,\ \tfrac{\pi}{2},\ 0\right]
+\]
+riproduca la configurazione del testo, secondo i criteri seguenti.
+
+\begin{itemize}
+    \item \textbf{Assi $z$.} $z_{i-1}$ giace sull'asse del giunto $i$, con verso concorde alla rotazione positiva del giunto in CoppeliaSim. Altrimenti, con l'offset di \texttt{moveLeftArm}, il giunto ruoterebbe al contrario rispetto al modello.
+    \item \textbf{Assi $x$.} Alla spalla e al polso gli assi dei giunti si incontrano e la normale comune non \`e definita: il verso di $x_i$ \`e scelto in modo che nella posa di riferimento $\theta_i = q_i$.
+    \item \textbf{Origini.} $O_0 \equiv O_1 \equiv O_2$ nella spalla, $O_3$ nel gomito, $O_4 \equiv O_5 \equiv O_6$ nel polso, $O_7$ a met\`a delle dita della pinza.
+\end{itemize}
+
+Gli assi $z_2$ e $z_6$ risultano diretti verso la spalla, mentre gomito e pinza stanno nel verso opposto: per questo $d_3 = -0.28$~m e $d_7 = -0.11$~m.
+L'angolo $\alpha_7 = \pi$ allinea la terna 7 con la terna \texttt{l\_EE\_FRAME} del simulatore.
+I parametri sono riportati in Tabella~\ref{tab:hw1-dh}; con questa tabella $\theta_i = q_i$, senza offset.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{images/terne_dh_adottata.pdf}
+\caption[Terne DH adottate nella posa di riferimento]{Terne DH adottate nella posa di riferimento. Assi $x$ in rosso, assi $z$ in blu, assi coincidenti $x \equiv z$ in viola; $\theta_i$ in arancio, $\alpha_i$ in verde. Gli assi tratteggiati appartengono a un'altra terna. Distanze non in scala.}
+\label{fig:hw1-terne-adottate}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+Link & $a_i$ (m) & $d_i$ (m) & $\theta_i$ & $\alpha_i$ \\
+\hline
+1 & $0$ & $0$ & $\theta_1$ & $-\pi/2$ \\
+2 & $0$ & $0$ & $\theta_2$ & $-\pi/2$ \\
+3 & $0$ & $-0.28$ & $\theta_3$ & $-\pi/2$ \\
+4 & $-0.28$ & $0$ & $\theta_4$ & $-\pi/2$ \\
+5 & $0$ & $0$ & $\theta_5$ & $\pi/2$ \\
+6 & $0$ & $0$ & $\theta_6$ & $\pi/2$ \\
+7 & $0$ & $-0.11$ & $\theta_7$ & $\pi$ \\
+\hline
+\end{tabular}
+\caption{Parametri DH adottati.}
+\label{tab:hw1-dh}
+\end{table}
+
+\section{\texorpdfstring{Discrepanza con la convenzione su $x_4$}{Discrepanza con la convenzione su x4}}
+\label{sec:hw1-discrepanza}
+
+La convenzione vorrebbe $x_4$ diretto dal giunto 4 (gomito) al giunto 5 (polso), con $a_4 = +0.28$~m.
+Con i dati del testo questo non \`e possibile: $\theta_4$ \`e l'angolo da $x_3$ a $x_4$ attorno a $z_3$, e con $\theta_4 = -\pi/2$ l'asse $x_4$ risulta diretto verso la spalla.
+Ne segue $a_4 = -0.28$~m; per mantenere $z_4$ concorde con il giunto 5 servono inoltre $\alpha_4 = -\pi/2$ e $\alpha_5 = \pi/2$.
+
+Rispettando la convenzione (Figura~\ref{fig:hw1-terne-convenzione}) cambierebbero solo le righe 4 e 5 della tabella, con $a_4 = +0.28$~m, $\alpha_4 = \pi/2$ e $\alpha_5 = -\pi/2$.
+Le variabili diventerebbero $\theta = q + [0,\ 0,\ 0,\ \pi,\ 0,\ -\pi,\ 0]$: $\theta_6$ cambia anch'esso di $\pi$ perch\'e, per $\theta_5 = 0$, $x_5$ coincide con $x_4$.
+Andrebbero quindi aggiornati i dati del testo relativi ai giunti 4 e 6 (Tabella~\ref{tab:hw1-dati-corretti}).
+Le due tabelle danno la stessa $A_e^b$ in ogni configurazione (differenza massima dell'ordine di $10^{-15}$ su 2000 configurazioni casuali).
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{images/terne_dh_convenzione.pdf}
+\caption[Terne DH conformi alla convenzione]{Terne DH conformi alla convenzione, con $x_4$ diretto verso il polso. Cambiano solo le terne 4 e 5 e gli angoli $\theta_4$, $\alpha_4$, $\alpha_5$, $\theta_6$.}
+\label{fig:hw1-terne-convenzione}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{|c|l|c|c|}
+\hline
+Giunto & Dato (rad) & Testo & Convenzione DH \\
+\hline
+4 & Posa di riferimento & $-\pi/2$ & $\pi/2$ \\
+4 & Offset per CoppeliaSim & $\pi/2$ & $-\pi/2$ \\
+4 & Limiti & $[-3.8208,\ -1.4708]$ & $[-0.6792,\ 1.6708]$ \\
+\hline
+6 & Posa di riferimento & $\pi/2$ & $-\pi/2$ \\
+6 & Offset per CoppeliaSim & $-\pi/2$ & $\pi/2$ \\
+6 & Limiti & $[1.2208,\ 1.9208]$ & $[-1.9208,\ -1.2208]$ \\
+\hline
+\end{tabular}
+\caption{Dati dei giunti 4 e 6 nel testo e con la tabella conforme alla convenzione.}
+\label{tab:hw1-dati-corretti}
+\end{table}
+
+\section{Cinematica diretta}
+\label{sec:hw1-cinematica}
+
+La matrice $A_e^b(q) = A_0^b\, A_1^0(q_1) \cdots A_7^6(q_7)$ \`e calcolata una sola volta in forma simbolica da \texttt{calcola\_trasform\_mat.m} e salvata in \texttt{matrici\_robot.mat}.
+La funzione
+\begin{lstlisting}[language=Matlab]
+[p, phi, R, quat] = direct_kin(q, 'ZYZ');   % oppure 'RPY'
+\end{lstlisting}
+sostituisce i valori dei giunti e restituisce la posizione $p$, gli angoli di Eulero richiesti, la matrice di rotazione $R$ e il quaternione $[\eta;\ \epsilon]$.
+I giunti fuori dai limiti articolari vengono saturati con un warning; nei casi singolari ($\sin\vartheta \approx 0$ per ZYZ, $\cos\vartheta \approx 0$ per RPY) si pone $\varphi = 0$.
+
+\section{Validazione}
+\label{sec:hw1-validazione}
+
+Lo script \texttt{test\_orientamento.m} confronta il modello con la posa della terna \texttt{l\_EE\_FRAME} letta da CoppeliaSim, nella posa di riferimento e variando un giunto alla volta.
+Si confrontano direttamente le matrici di rotazione, per evitare ambiguit\`a sulla convenzione degli angoli usata dal simulatore.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|c|c|}
+\hline
+Configurazione & $\lVert R - R_c \rVert_F$ & $\lVert p - p_c \rVert$ (m) \\
+\hline
+Posa di riferimento & \textit{da inserire} & \textit{da inserire} \\
+$q_1$ variato & \textit{da inserire} & \textit{da inserire} \\
+$q_2$ variato & \textit{da inserire} & \textit{da inserire} \\
+$q_3$ variato & \textit{da inserire} & \textit{da inserire} \\
+$q_4$ variato & \textit{da inserire} & \textit{da inserire} \\
+$q_5$ variato & \textit{da inserire} & \textit{da inserire} \\
+$q_6$ variato & \textit{da inserire} & \textit{da inserire} \\
+$q_7$ variato & \textit{da inserire} & \textit{da inserire} \\
+\hline
+\end{tabular}
+\caption{Errori tra modello e simulatore ($R_c$, $p_c$: valori di CoppeliaSim).}
+\label{tab:hw1-validazione}
+\end{table}
