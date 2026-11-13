@@ -18,7 +18,7 @@ function [p, phi, R, quat] = direct_kin(q, euler_angles)
 
     syms theta_1 theta_2 theta_3 theta_4 theta_5 theta_6 theta_7
 
-    % 3. Sostituisci i valori e converti in matrice numerica (double)
+    % Sostituisci i valori e converti in matrice numerica (double)
     A = double(subs(A_b_e, ...
     [theta_1, theta_2, theta_3, theta_4, theta_5, theta_6, theta_7], ...
     q));
