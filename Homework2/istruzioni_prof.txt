@@ -2,6 +2,6 @@ Il secondo homework riguarderà l'inversione cinematica del secondo ordine e la 
 
 Pertanto, potete iniziare a portarvi avanti impostando, ad esempio, lo script o schema simulink (a vostra scelta) per l'inversione cinematica (questo richiede anche il calcolo di Jacobiano geometrico e analitico). 
 
-Considerare inizialmente una xd costante con un dispacement di pochi cm lungo un asse e trovare il rispettivo moto spazio giunti. 
+Considerare inizialmente una xd costante con un displacement di pochi cm lungo un asse e trovare il rispettivo moto spazio giunti. 
 
 Partire dal CLIK del primo ordine e considerare una configurazione iniziale in cui il manipolatore non ha il braccio completamente steso.
