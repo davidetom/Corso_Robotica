@@ -1,4 +1,4 @@
-function [A_param, A_b_e] = calcola_trasform_mat(q)
+function [A_array] = calcola_trasform_mat(q)
 % Calcola online le matrici di trasformazione omogenea dalla base
 % ai singoli giunti (A_b_0, A_b_1, ..., A_b_6, A_b_e) nella configurazione q
 % e restituisce l'array di celle A_param = {A_b_0, ..., A_b_e}.
@@ -51,10 +51,7 @@ function [A_param, A_b_e] = calcola_trasform_mat(q)
         A_mat{i} = A_b_i; % matrice da base a i
     end
 
-    % matrice di trasformazione finale da base a end-effector
-    A_b_e = A_mat{7};
-
     % array completo delle matrici {A_b_0, A_b_1, ..., A_b_6, A_b_e}
-    A_param = [{A_b_0}, A_mat];
+    A_array = [{A_b_0}, A_mat];
 
 end

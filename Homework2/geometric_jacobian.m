@@ -3,9 +3,9 @@ function [J, A_b_e] = geometric_jacobian(q)
 % utilizzando le matrici di trasformazione restituite da calcola_trasform_mat(q).
 
     % 1. Ottengo le matrici di trasformazione {A_b_0, A_b_1, ..., A_b_6, A_b_e}
-    A_param = calcola_trasform_mat(q);
-    k = length(A_param);
-    A_b_e = A_param{end};
+    A_array = calcola_trasform_mat(q);
+    k = length(A_array);
+    A_b_e = A_array{end};
 
     % STRUTTURA DEL JACOBIANO GEOMETRICO
     % |                             |
@@ -17,13 +17,13 @@ function [J, A_b_e] = geometric_jacobian(q)
     % Estraggo le posizioni delle origini delle terne di ciascun giunto
     P = zeros(3, k);
     for i = 1:k
-        P(:, i) = A_param{i}(1:3, 4);
+        P(:, i) = A_array{i}(1:3, 4);
     end
 
     % Estraggo i versori z delle terne di ciascun giunto
     z = zeros(3, k);
     for i = 1:k
-        z(:, i) = A_param{i}(1:3, 3);
+        z(:, i) = A_array{i}(1:3, 3);
     end
 
     % Costruisco lo Jacobiano geometrico numerico 6x7

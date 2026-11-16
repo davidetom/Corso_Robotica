@@ -6,9 +6,6 @@ function [Ja] = analytical_jacobian(q, euler_angles)
     [J, A] = geometric_jacobian(q);
 
     R = A(1:3, 1:3);
-    gamma = 0;
-    theta = 0;
-    psi   = 0;
 
     if strcmpi(euler_angles, 'ZYZ')
         s_theta = sqrt(R(1,3)^2 + R(2,3)^2);
@@ -57,5 +54,4 @@ function [Ja] = analytical_jacobian(q, euler_angles)
 
     Ja = [J(1:3, :);        % la sottomatrice di posizione rimane uguale
           T \ J(4:6, :)];   % la sottomatrice di orientamento viene pre-moltiplicata per T^-1
-
 end

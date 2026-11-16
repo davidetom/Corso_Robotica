@@ -1,25 +1,7 @@
 function [p, phi, R, quat] = direct_kin(q, euler_angles)
 
-    % Definizione dei limiti fisici dei giunti del braccio sinistro
-    q_min = [-pi, -pi/2, -4.7124, -3.8208, -0.35, 1.2208, -pi/2];
-    q_max = [ pi,  pi/2,  pi/2,   -1.4708,  0.35, 1.9208,  pi/2];
-
-    % Controllo di violazione dei limiti
-    if any(q < q_min) || any(q > q_max)
-        warning('Cinematica Diretta: Uno o più giunti in ingresso superano i limiti strutturali.');
-        
-        % Forzo i valori di q all'interno del range consentito
-        q = max(q_min, min(q, q_max));
-    end
-
-    load('matrici_robot.mat', 'A_b_e'); % Carica A_b_e
-
-    syms theta_1 theta_2 theta_3 theta_4 theta_5 theta_6 theta_7
-
-    % 3. Sostituisci i valori e converti in matrice numerica (double)
-    A = double(subs(A_b_e, ...
-    [theta_1, theta_2, theta_3, theta_4, theta_5, theta_6, theta_7], ...
-    q));
+    A_array = calcola_trasform_mat(q);
+    A = A_array{end};
 
     % Vettore di posizione
     p = A(1:3, 4);

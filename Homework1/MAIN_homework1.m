@@ -14,7 +14,7 @@ simulator = SimProjectUtils(sim);
 % 4.a. Calcola la cinematica diretta dell'end effector  
 % posa di riferimento con la tabella DH con x4 verso il polso
 % (prima: [0, -pi/2, -pi/2, -pi/2, 0, pi/2, 0])
-q = [0, -pi/2, -pi/2, pi/2, 0, -pi/2, 0]; 
+q = [0, -pi/2, -pi/2, pi/4, 0, -pi/2, 0]; 
 
 [p, phi, R, quat] = direct_kin(q, 'ZYZ'); % 'ZYZ' o 'RPY'
 
