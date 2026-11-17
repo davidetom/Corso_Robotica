@@ -1,0 +1,34 @@
+PRELIMINARY INSTALLATIONS
+-------------------------
+- Install simulator - https://www.coppeliarobotics.com/downloads
+- Install Matlab 
+
+SETUP COPPELIA SIMULATOR
+-------------------------
+- https://www.coppeliarobotics.com/helpFiles/en/remoteApiClientSide.htm#matlab
+To use the legacy remote API functionality in your Matlab program, you will need following 3 items:
+remoteApiProto.m
+remApi.m
+remoteApi.dll, remoteApi.dylib or remoteApi.so (depending on your target platform): "remoteApi.dll" (Windows), "remoteApi.dylib" (Mac) or "remoteApi.so" (Linux)
+
+Above files are located in CoppeliaSim's installation directory, under programming/legacyRemoteApi/remoteApiBindings/matlab. 
+You might have to build the remoteApi shared library yourself (using remoteApiSharedLib.vcproj or remoteApiSharedLib_Makefile) if not already built.
+
+Once you have the above elements in Matlab's current folder, call sim=remApi('remoteApi') to build the object and load the library.
+
+Then, check that the paths included in the MAIN are correct with respect to the operating system used
+
+- Open the file CoppeliaRobotics\CoppeliaSimEdu\remoteApiConnections.txt 
+- Set in the file: 
+portIndex1_port             = 19998
+portIndex1_debug            = true
+portIndex1_syncSimTrigger   = true
+
+
+
+NOTE: For Mac users it might be necessary to manually open the communication channel on Coppelia. 
+To this aim, text the following in the Lua code form in the bottom part of the simulator 
+
+simRemoteApi.start(19998)
+
+Then click on play button

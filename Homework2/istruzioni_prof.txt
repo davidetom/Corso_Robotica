@@ -1,7 +1,0 @@
-Il secondo homework riguarderà l'inversione cinematica del secondo ordine e la pianificazione di traiettoria (trovate in allegato l'esempio di traccia dell'anno scorso, cambieranno solo i dati del problema rispetto ad esso). 
-
-Pertanto, potete iniziare a portarvi avanti impostando, ad esempio, lo script o schema simulink (a vostra scelta) per l'inversione cinematica (questo richiede anche il calcolo di Jacobiano geometrico e analitico). 
-
-Considerare inizialmente una xd costante con un displacement di pochi cm lungo un asse e trovare il rispettivo moto spazio giunti. 
-
-Partire dal CLIK del primo ordine e considerare una configurazione iniziale in cui il manipolatore non ha il braccio completamente steso.
