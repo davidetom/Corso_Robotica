@@ -17,6 +17,7 @@ pause(3);
 q = [0, -pi/2, -pi/2, pi/4, 0, -pi/2, 0]; 
 simulator.moveLeftArm(q);
 pause(1);
+%% 
 
 % Configurazione a L
 q = [-pi/3, -pi/2, -pi/2, pi/20, 0, -pi/2, 0];
