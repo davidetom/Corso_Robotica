@@ -5,36 +5,33 @@ function [xd, dxd, ddxd] = trajectory()
     % Posa iniziale in spazio operativo
     [p0, phi0, ~, ~] = direct_kin(q0, 'ZYZ');
     x0 = [p0 ; phi0];
-
-    % configurazione ai giunti del braccio pre-saluto
-    q_goal_pre = [-pi/3, -pi/2, -pi/2, pi/20, 0, -pi/2, 0];
     
-
-    % METODO PERCORSO ASSEGNATO AD ARCO DI CIRCONFERENZA
+    % configurazione ai giunti del braccio pre-saluto
+    q_goal_pre = [-pi/3, -1.42, -pi/2, pi/20, 0, -pi/2, 0];
+    
     
     % posizione dell'end effector "fine corsa dx" per il saluto
-    q_goal_dx = [-pi/3, -pi/2, -2*pi/3, pi/20, 0, -pi/2, 0];
+    q_goal_dx = [-pi/3, -1.42, -2*pi/3, pi/20, 0, -pi/2, 0];
     [p_dx , phi_dx, ~, ~] = direct_kin(q_goal_dx, 'ZYZ');
     x_goal_dx = [p_dx ; phi_dx];
 
     % posizione dell'end effector "fine corsa sx" per il saluto
-    q_goal_sx = [-pi/3, -pi/2, -pi/3, pi/20, 0, -pi/2, 0];
+    q_goal_sx = [-pi/3, -1.42, -pi/3, pi/20, 0, -pi/2, 0];
     [p_sx , phi_sx, ~, ~] = direct_kin(q_goal_sx, 'ZYZ');
     x_goal_sx = [p_sx ; phi_sx];
     
-    % dati x traiettoria ad arco
-    tf = 1.5;
+    % dati x traiettoria ad arco del saluto
+    tf = 0.5;
     t_step = 0.001;
     [p, phi, ~, ~] = direct_kin(q_goal_pre, 'ZYZ');
     x_pre = [p ; phi];
-    
 
-    % METODO PERCORSO ASSEGNATO RETTILINEO
-    
+
     % posizione della punta del cappello e orientamento ZYZ desiderato
     % variando solo gamma da pi/2 a 0 il cappello ruota solo attorno a zb restando dritto)
     phi_cap = [pi/2; 2*pi/3; -2*pi/3];
     x_goal_cap = [0.025; 0.75; 0.76; phi_cap];
+    pos_centro_cap = [-0.205211; 0.097014; 0.976564]; % centro arco passo 7 (freccia 15 cm verso l'esterno)
 
     % posizione della testa del pupazzo di neve e orientamento ZYZ desiderato
     phi_head = [0; 2*pi/3; -2*pi/3];
@@ -67,10 +64,10 @@ function [xd, dxd, ddxd] = trajectory()
     [xd6, dxd6, ddxd6] = xd_arco_circ(q_goal_pre, x_goal_sx, x_pre, tf, t_step);
 
     % 7° passo: pos pre-saluto -> pos cappello
-    [xd7, dxd7, ddxd7] = xd_rettilinea(x_pre, x_goal_cap, 2*tf, t_step);
+    [xd7, dxd7, ddxd7] = xd_arco_circ(pos_centro_cap, x_pre, x_goal_cap, 3*tf, t_step);
 
     % 8° passo: pos cappello -> pos testa pupazzo
-    [xd8, dxd8, ddxd8] = xd_rettilinea(x_goal_cap, x_goal_head, 2*tf, t_step);
+    [xd8, dxd8, ddxd8] = xd_rettilinea(x_goal_cap, x_goal_head, 3*tf, t_step);
 
     % 9° passo: pos testa pupazzo -> pos iniziale
     [xd9, dxd9, ddxd9] = xd_rettilinea(x_goal_head, x0, 2*tf, t_step);

@@ -1,10 +1,16 @@
-function [xd, dxd, ddxd] = xd_arco_circ(q, x_start, x_goal, tf, t_step)
+function [xd, dxd, ddxd] = xd_arco_circ(centro_o_q, x_start, x_goal, tf, t_step)
     
-    A = calcola_trasform_mat(q);
-    A_gomito = A{end-4};
+    % Accetta sia una configurazione ai giunti q (7 elementi -> centro al gomito)
+    % sia direttamente le coordinate [x; y; z] del centro (3 elementi)
+    if numel(centro_o_q) == 3
+        pos_centro = centro_o_q(:);
+    else
+        A = calcola_trasform_mat(centro_o_q);
+        A_gomito = A{end-4};
+        pos_centro = A_gomito(1:3,4);
+    end
 
-    % dati traiettoria della posizione (centro al gomito)
-    pos_centro = A_gomito(1:3,4);
+    % dati traiettoria della posizione
     u = x_start(1:3) - pos_centro;
     raggio = norm(u);
     v = x_goal(1:3) - pos_centro;

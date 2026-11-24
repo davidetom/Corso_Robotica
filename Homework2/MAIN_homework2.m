@@ -7,38 +7,45 @@ client = RemoteAPIClient();
 sim = client.getObject('sim');
 
 % Joint space configuration
-% Aggiornata qDH per coerenza con la nuova convenzione DH (x4 verso il polso),
-% con i limiti qMinDH/qMaxDH e con trajectory.m.
-% Vecchia convenzione (Homework2.pdf): qDH = [0,-pi/3,-pi/2,-pi, 0, 0.6981, 0];
 qDH = [0, -pi/3, -pi/2, 0, 0, 0.6981 - pi, 0];
 
-% Joint space limits (con x4 verso il basso)
+% Joint space limits
 qMinDH = [-3.1416   -1.5708   -4.7124   -0.6792   -1.3963    -2.9671   -1.5708]'; %rad x7
 qMaxDH = [3.1416    1.5708    1.5708   1.6708    1.3963    -0.1745    1.5708]'; %rad x7
-
-simulator = SimProjectUtils(sim);
 
 [xd, dxd, ddxd] = trajectory();
 [x,dx,ddx,q,dq,ddq] = inverse_kin(qDH, xd, dxd, ddxd);
 
+% Modalita' sincrona (stepping): applica tutti e 7 i giunti nello stesso frame
+% evitando gli scatti dovuti alla latenza ZMQ.
+% Nota: in CoppeliaSim 4.6+ si usa sim.setStepping(true) / sim.step();
+% nelle versioni 4.3-4.5 usare client.setStepping(true) / client.step().
+sim.setStepping(true);
+simulator = SimProjectUtils(sim);
+
 N = size(q, 1);
 dT = 0.001;
+step = 25; % 25 ms = dt di default di CoppeliaSim (40 FPS; usa 25 se imposti dt=25 ms)
 
-% Ciclo sincronizzato al tempo reale: evita che la latenza ZMQ (7 chiamate
-% per frame) e il pause() sommati rallentino la simulazione oltre i 24 s reali.
-tic;
-while true
-    k = floor(toc / dT) + 1;
-    if k >= N
-        simulator.moveLeftArm(q(end, :));
-        break;
-    end
+t_start = tic;
+for k = 1:step:N
     simulator.moveLeftArm(q(k, :));
+    sim.step();
+    if k == 6501
+        simulator.graspObject();
+    elseif k == 8001
+        simulator.releaseObject();
+    end
+    % Sincronizza al tempo reale senza accumulare ritardo
+    t_wait = (k - 1) * dT - toc(t_start);
+    if t_wait > 0
+        pause(t_wait);
+    end
 end
+simulator.moveLeftArm(q(end, :));
+sim.step();
 
-% simulator.moveLeftArm(qDH);
-
-%% Useful functions to grasp/release objects: 
+% Useful functions to grasp/release objects: 
 % simulator.graspObject();
 % simulator.releaseObject();
 
