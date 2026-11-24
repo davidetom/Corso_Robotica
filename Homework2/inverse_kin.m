@@ -1,18 +1,15 @@
-function [X,dX,ddX,Q,dQ,ddQ] = inverse_kin(q0, xd, dxd, ddxd)
+function [Q, dQ, ddQ] = inverse_kin(q0, xd, dxd, ddxd)
 
     dT = 0.001;
     q = q0(:); dq = zeros(7, 1);
     N = size(xd, 2);
     
-    % array per salvare l'evoluzione del controllo
-    X = zeros(N, 6);
-    dX = zeros(N, 6);
-    ddX = zeros(N, 6);
+    % array per salvare l'evoluzione nei giunti
     Q = zeros(N, 7);
     dQ = zeros(N, 7);
     ddQ = zeros(N, 7);
 
-    % guadagni PD (suggerimento per smorzamento critico se necessario: es. Kp=100, Kd=20)
+    % guadagni PD in spazio operativo
     Kp = 10 * eye(6);
     Kd = 2 * eye(6);
 
@@ -38,7 +35,6 @@ function [X,dX,ddX,Q,dQ,ddQ] = inverse_kin(q0, xd, dxd, ddxd)
         e(4:6) = atan2(sin(e(4:6)), cos(e(4:6)));
 
         term1 = ddxd_i + Kd * (dxd_i - dx) + Kp * e;
-        ddx = term1;
         
         Ja_next = analytical_jacobian(q + h * dq, 'ZYZ');
         dJa = (Ja_next - Ja) / h;                    
@@ -68,10 +64,7 @@ function [X,dX,ddX,Q,dQ,ddQ] = inverse_kin(q0, xd, dxd, ddxd)
         
         ddq = ddq + phi_n;
         
-        % aggiornamenti
-        X(i,:) = x;
-        dX(i,:) = dx;
-        ddX(i,:) = ddx;
+        % salvataggio campione corrente
         Q(i,:) = q;
         dQ(i,:) = dq;
         ddQ(i,:) = ddq;

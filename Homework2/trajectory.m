@@ -86,7 +86,7 @@ function [xd, dxd, ddxd] = trajectory()
     ddxd = [ddxd1, ddxd2(:, 2:end), ddxd3(:, 2:end), ddxd4(:, 2:end), ddxd5(:, 2:end), ...
             ddxd6(:, 2:end), ddxd7(:, 2:end), ddxd8(:, 2:end), ddxd9(:, 2:end)];
 
-    % [AGGIUNTA] Rende continui gli angoli di Eulero lungo il tempo evitando salti di 2*pi
+    % Rende continui gli angoli di Eulero lungo il tempo evitando salti di 2*pi
     xd(4:6, :) = unwrap(xd(4:6, :), [], 2);
 
 end
