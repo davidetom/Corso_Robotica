@@ -1,7 +1,7 @@
 function [xd, dxd, ddxd] = xd_arco_circ(centro_o_q, x_start, x_goal, tf, t_step)
     
-    % Accetta sia una configurazione ai giunti q (7 elementi -> centro al gomito)
-    % sia direttamente le coordinate [x; y; z] del centro (3 elementi)
+    % Accetta sia una configurazione ai giunti q
+    % sia direttamente le coordinate [x; y; z] del centro
     if numel(centro_o_q) == 3
         pos_centro = centro_o_q(:);
     else

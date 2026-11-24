@@ -1,15 +1,9 @@
-function [f, grad_f] = cost_function(q, dq, t, Ja)
-% Funzione di costo complessiva f(q, t) e suo gradiente per
-% la proiezione nello spazio nullo
+function [f, grad_f] = cost_function(q, t, Ja)
 
     q = q(:);
     n = length(q);
 
-    if nargin < 2 || isempty(t)
-        t = 0;
-    end
-
-    % ======================== PARAMETRI =================================
+    % PARAMETRI
     % Pesi dei tre contributi (0 per disattivare un termine)
     k_lim  = 100.0;   % mantenimento limiti di giunto
     k_saluto = 1.0;   % mantenimento postura durante il saluto
@@ -20,7 +14,7 @@ function [f, grad_f] = cost_function(q, dq, t, Ja)
     % restano fissi (spalla e gomito).
     W_saluto = diag([5.0, 5.0, 0.0, 5.0, 0.5, 0.5, 0.5]);
 
-    % Finestra temporale del saluto (passi 2 -> 6 in trajectory.m: t in [3, 15] s)
+    % Finestra temporale del saluto (passi 2 -> 6 in trajectory.m: t in [1, 5] s)
     t_wave_start = 1.0;
     t_wave_end   = 5.0;
     t_ramp       = 0.25;   % durata rampa liscia
@@ -28,7 +22,7 @@ function [f, grad_f] = cost_function(q, dq, t, Ja)
     % Passo per differenze finite del termine di singolarita'
     delta   = 1e-5;      % variazione per calcolo delle derivate parziali
     epsilon = 1e-8;      % per evitare divisione per 0 in singolarita'
-    % ====================================================================
+
 
     % Limiti di giunto
     qMinDH = [-3.1416; -1.5708; -4.7124; -0.6792; -1.3963; -2.9671; -1.5708];
@@ -39,7 +33,8 @@ function [f, grad_f] = cost_function(q, dq, t, Ja)
     % Configurazione di riferimento pre-saluto (corrisponde a q_goal_pre in trajectory.m)
     q_ref = [-pi/3; -1.42; -pi/2; pi/20; 0; -pi/2; 0];
 
-    % ======================== FUNZIONI DI COSTO =========================
+    
+
     % 1) Evitamento limiti di giunto: f_lim(q)
     % f_lim = (k_lim / (2*n)) * sum( ((q_j - q_mean_j) / (qMax_j - qMin_j))^2 )
     if k_lim > 0
@@ -64,7 +59,7 @@ function [f, grad_f] = cost_function(q, dq, t, Ja)
     end
 
     % 3) Evitamento singolarita': f_sing(q) = -k_sing * w(q)
-    % Massimizza la manipolabilita' di Yoshikawa citata nel paper:
+    % Massimizza la manipolabilita' citata nel paper:
     % w(q) = sqrt(det(Ja * Ja'))
     if k_sing > 0
         w = sqrt(max(det(Ja * Ja'), 0) + epsilon);
@@ -97,6 +92,7 @@ end
 % Funzione ausiliaria: finestra temporale liscia C^1 in [0, 1] 
 %       _________
 % _____/         \_____
+%
 
 function alpha = smooth_window(t, t_start, t_end, t_ramp)
     if t <= (t_start - t_ramp) || t >= (t_end + t_ramp)

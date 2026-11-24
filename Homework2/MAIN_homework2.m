@@ -18,24 +18,24 @@ qMaxDH = [3.1416    1.5708    1.5708   1.6708    1.3963    -0.1745    1.5708]'; 
 
 % Modalita' sincrona (stepping): applica tutti e 7 i giunti nello stesso frame
 % evitando gli scatti dovuti alla latenza ZMQ.
-% Nota: in CoppeliaSim 4.6+ si usa sim.setStepping(true) / sim.step();
-% nelle versioni 4.3-4.5 usare client.setStepping(true) / client.step().
 sim.setStepping(true);
 simulator = SimProjectUtils(sim);
 
 N = size(q, 1);
 dT = 0.001;
-step = 25; % 25 ms = dt di default di CoppeliaSim (40 FPS; usa 25 se imposti dt=25 ms)
+step = 25; % 25 ms = dt di default di CoppeliaSim (40 FPS)
 
 t_start = tic;
 for k = 1:step:N
     simulator.moveLeftArm(q(k, :));
     sim.step();
+
     if k == 6501
         simulator.graspObject();
     elseif k == 8001
         simulator.releaseObject();
     end
+
     % Sincronizza al tempo reale senza accumulare ritardo
     t_wait = (k - 1) * dT - toc(t_start);
     if t_wait > 0
@@ -45,14 +45,11 @@ end
 simulator.moveLeftArm(q(end, :));
 sim.step();
 
-% Useful functions to grasp/release objects: 
-% simulator.graspObject();
-% simulator.releaseObject();
 
 %% Plot dei risultati
 plot_results(xd, dxd, ddxd, x, dx, ddx, q, dq, ddq, qMinDH, qMaxDH, dT);
 
-%% Funzione locale di plot
+% Funzione locale di plot
 function plot_results(xd, dxd, ddxd, x, dx, ddx, q, dq, ddq, qMinDH, qMaxDH, dT)
     N = size(q, 1);
     t = (0:N-1) * dT;
@@ -156,8 +153,6 @@ function plot_results(xd, dxd, ddxd, x, dx, ddx, q, dq, ddq, qMinDH, qMaxDH, dT)
     end
 
     % --- Figura 5: Analisi singolarita' (det(Ja*Ja'), manipolabilita', sigma_min) ---
-    % Nota: pinv(Ja)*Ja e' 7x7 di rango <= 6, quindi il suo determinante e' sempre 0.
-    % Per misurare la vicinanza alle singolarita' si usa Ja*Ja' (6x6) e sigma_min(Ja).
     idx_s = 1:10:N; % sottocampionamento (ogni 10 ms) per velocizzare il plot
     t_s = t(idx_s);
     det_JJt = zeros(size(idx_s));

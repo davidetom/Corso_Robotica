@@ -28,15 +28,15 @@ function [xd, dxd, ddxd] = trajectory()
 
 
     % posizione della punta del cappello e orientamento ZYZ desiderato
-    % (variando solo gamma da 4*pi/9 a -pi/18 il cappello ruota solo attorno a zb restando dritto)
+    % (variando solo gamma da 4*pi/9 a -pi/18 il cappello ruota restando dritto)
     phi_cap = [4*pi/9; 5*pi/9; -5*pi/6];
     x_goal_cap = [0.025; 0.75; 0.76; phi_cap];
-    pos_centro_cap = [-0.205211; 0.097014; 0.976564]; % centro arco passo 7 (freccia 15 cm verso l'esterno)
+    pos_centro_cap = [-0.20; 0.09; 0.96];
 
     % posizione della testa del pupazzo di neve e orientamento ZYZ desiderato
     phi_head = [-pi/18; 5*pi/9; -5*pi/6];
     x_goal_head = [0.65; 0.13; 0.99; phi_head];
-    pos_centro_head = [0.253037; 0.288138; 0.695151]; % centro arco passo 8 (freccia 20 cm in alto, 18 cm verso l'esterno)
+    pos_centro_head = [0.23; 0.27; 0.71];
 
     % -------------------------------------------------------------------
 

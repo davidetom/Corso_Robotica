@@ -37,7 +37,7 @@ function [X,dX,ddX,Q,dQ,ddQ] = inverse_kin(q0, xd, dxd, ddxd)
         e = xd_i - x;
         e(4:6) = atan2(sin(e(4:6)), cos(e(4:6)));
 
-        term1 = ddxd_i + Kd*(dxd_i - dx) + Kp*e;
+        term1 = ddxd_i + Kd * (dxd_i - dx) + Kp * e;
         ddx = term1;
         
         Ja_next = analytical_jacobian(q + h * dq, 'ZYZ');
@@ -51,7 +51,7 @@ function [X,dX,ddX,Q,dQ,ddQ] = inverse_kin(q0, xd, dxd, ddxd)
 
         % aggiunta della proiezione nel nullo
         t = (i - 1) * dT;
-        [~, grad_f] = cost_function(q, dq, t, Ja);
+        [~, grad_f] = cost_function(q, t, Ja);
         g = - grad_f;
         if i == 1
             dg = zeros(7,1);
@@ -62,6 +62,7 @@ function [X,dX,ddX,Q,dQ,ddQ] = inverse_kin(q0, xd, dxd, ddxd)
         dJa_pinv = (pinv(Ja_next) - Ja_pinv) / h;
         n_projection = (eye(7) - Ja_pinv * Ja);
         de_n = n_projection * (g - dq);
+
         phi_n = n_projection * (dg + Kn * de_n) - ...
                 (Ja_pinv * dJa * Ja_pinv  + dJa_pinv) * Ja * (g - dq);
         
@@ -76,8 +77,8 @@ function [X,dX,ddX,Q,dQ,ddQ] = inverse_kin(q0, xd, dxd, ddxd)
         ddQ(i,:) = ddq;
     
         % integrazione Euler forward
-        dq = dq + ddq*dT;
-        q = q + dq*dT;
+        dq = dq + ddq * dT;
+        q = q + dq * dT;
        
     end
 end

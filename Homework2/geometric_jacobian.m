@@ -7,7 +7,7 @@ function [J, A_b_e] = geometric_jacobian(q)
     k = length(A_array);
     A_b_e = A_array{end};
 
-    % STRUTTURA DEL JACOBIANO GEOMETRICO
+    % STRUTTURA DELLO JACOBIANO GEOMETRICO
     % |                             |
     % |   z_(i-1) x (P_e - o_(i-1)) |
     % |                             |
