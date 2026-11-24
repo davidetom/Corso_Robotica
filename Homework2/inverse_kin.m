@@ -51,7 +51,7 @@ function [X,dX,ddX,Q,dQ,ddQ] = inverse_kin(q0, xd, dxd, ddxd)
 
         % aggiunta della proiezione nel nullo
         t = (i - 1) * dT;
-        [~, grad_f] = cost_function(q, t, Ja);
+        [~, grad_f] = cost_function(q, dq, t, Ja);
         g = - grad_f;
         if i == 1
             dg = zeros(7,1);
@@ -64,6 +64,7 @@ function [X,dX,ddX,Q,dQ,ddQ] = inverse_kin(q0, xd, dxd, ddxd)
         de_n = n_projection * (g - dq);
         phi_n = n_projection * (dg + Kn * de_n) - ...
                 (Ja_pinv * dJa * Ja_pinv  + dJa_pinv) * Ja * (g - dq);
+        
         ddq = ddq + phi_n;
         
         % aggiornamenti

@@ -28,14 +28,15 @@ function [xd, dxd, ddxd] = trajectory()
 
 
     % posizione della punta del cappello e orientamento ZYZ desiderato
-    % variando solo gamma da pi/2 a 0 il cappello ruota solo attorno a zb restando dritto)
-    phi_cap = [pi/2; 2*pi/3; -2*pi/3];
+    % (variando solo gamma da 4*pi/9 a -pi/18 il cappello ruota solo attorno a zb restando dritto)
+    phi_cap = [4*pi/9; 5*pi/9; -5*pi/6];
     x_goal_cap = [0.025; 0.75; 0.76; phi_cap];
     pos_centro_cap = [-0.205211; 0.097014; 0.976564]; % centro arco passo 7 (freccia 15 cm verso l'esterno)
 
     % posizione della testa del pupazzo di neve e orientamento ZYZ desiderato
-    phi_head = [0; 2*pi/3; -2*pi/3];
+    phi_head = [-pi/18; 5*pi/9; -5*pi/6];
     x_goal_head = [0.65; 0.13; 0.99; phi_head];
+    pos_centro_head = [0.253037; 0.288138; 0.695151]; % centro arco passo 8 (freccia 20 cm in alto, 18 cm verso l'esterno)
 
     % -------------------------------------------------------------------
 
@@ -67,7 +68,7 @@ function [xd, dxd, ddxd] = trajectory()
     [xd7, dxd7, ddxd7] = xd_arco_circ(pos_centro_cap, x_pre, x_goal_cap, 3*tf, t_step);
 
     % 8° passo: pos cappello -> pos testa pupazzo
-    [xd8, dxd8, ddxd8] = xd_rettilinea(x_goal_cap, x_goal_head, 3*tf, t_step);
+    [xd8, dxd8, ddxd8] = xd_arco_circ(pos_centro_head, x_goal_cap, x_goal_head, 3*tf, t_step);
 
     % 9° passo: pos testa pupazzo -> pos iniziale
     [xd9, dxd9, ddxd9] = xd_rettilinea(x_goal_head, x0, 2*tf, t_step);

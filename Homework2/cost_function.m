@@ -1,4 +1,4 @@
-function [f, grad_f] = cost_function(q, t, Ja)
+function [f, grad_f] = cost_function(q, dq, t, Ja)
 % Funzione di costo complessiva f(q, t) e suo gradiente per
 % la proiezione nello spazio nullo
 
@@ -13,7 +13,7 @@ function [f, grad_f] = cost_function(q, t, Ja)
     % Pesi dei tre contributi (0 per disattivare un termine)
     k_lim  = 100.0;   % mantenimento limiti di giunto
     k_saluto = 1.0;   % mantenimento postura durante il saluto
-    k_sing = 20.0;   % evitamento singolarità
+    k_sing = 20.0;    % evitamento singolarità
 
     % Pesi per ogni giunto nella postura di saluto:
     % in trajectory.m durante il saluto varia il giunto 3, mentre 1, 2, 4
